@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.transaction.annotation.Transactional;
 
 import static by.kraskovski.pms.domain.model.enums.AuthorityEnum.ROLE_ADMIN;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -17,6 +18,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Transactional
 public class ImageControllerIT extends ControllerTestConfig {
 
     private static final String BASE_IMAGE_URL = "/image";
@@ -26,14 +28,7 @@ public class ImageControllerIT extends ControllerTestConfig {
 
     @Before
     public void before() {
-        imageService.deleteAll();
         authenticateUserWithAuthority(ROLE_ADMIN);
-    }
-
-    @After
-    public void after() {
-        imageService.deleteAll();
-        cleanup();
     }
 
     @Test

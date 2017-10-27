@@ -16,6 +16,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import static by.kraskovski.pms.domain.model.enums.AuthorityEnum.ROLE_ADMIN;
 import static by.kraskovski.pms.domain.model.enums.AuthorityEnum.ROLE_USER;
@@ -33,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Transactional
 public class CartControllerIT extends ControllerTestConfig {
 
     private static final String BASE_CART_URL = "/cart";
@@ -57,22 +59,8 @@ public class CartControllerIT extends ControllerTestConfig {
 
     @Before
     public void before() {
-        cartService.deleteAll();
-        userService.deleteAll();
-        productService.deleteAll();
-        stockService.deleteAll();
         authorityService.create(new Authority(ROLE_USER));
         authenticateUserWithAuthority(ROLE_ADMIN);
-    }
-
-    @After
-    public void after() {
-        cleanup();
-        cartService.deleteAll();
-        userService.deleteAll();
-        productService.deleteAll();
-        stockService.deleteAll();
-        authorityService.deleteAll();
     }
 
     @Test

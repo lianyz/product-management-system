@@ -9,6 +9,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -26,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Transactional
 public class UserControllerIT extends ControllerTestConfig {
 
     private static final String BASE_USER_URL = "/user";
@@ -38,14 +40,7 @@ public class UserControllerIT extends ControllerTestConfig {
 
     @Before
     public void before() {
-        userService.deleteAll();
         authenticateUserWithAuthority(ROLE_ADMIN);
-    }
-
-    @After
-    public void after() {
-        cleanup();
-        userService.deleteAll();
     }
 
     @Test

@@ -4,24 +4,21 @@ import by.kraskovski.pms.domain.model.Authority;
 import by.kraskovski.pms.domain.model.enums.AuthorityEnum;
 import by.kraskovski.pms.domain.service.AuthorityService;
 import by.kraskovski.pms.domain.service.integration.config.ServiceTestConfig;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.transaction.Transactional;
 
 import static io.jsonwebtoken.lang.Assert.notNull;
 
 /**
  * Integration test for {@link AuthorityService}.
  */
+@Transactional
 public class AuthorityServiceIT extends ServiceTestConfig {
 
     @Autowired
     private AuthorityService authorityService;
-
-    @Before
-    public void setUp() {
-        authorityService.deleteAll();
-    }
 
     @Test
     public void findByNameIfExistsTest() {
