@@ -1,9 +1,9 @@
 package by.kraskovski.pms.application.controller.config;
 
-import by.kraskovski.pms.application.security.service.TokenService;
+import by.kraskovski.pms.domain.model.enums.AuthorityEnum;
 import by.kraskovski.pms.domain.model.Authority;
 import by.kraskovski.pms.domain.model.User;
-import by.kraskovski.pms.domain.model.enums.AuthorityEnum;
+import by.kraskovski.pms.application.security.service.TokenService;
 import by.kraskovski.pms.domain.service.AuthorityService;
 import by.kraskovski.pms.domain.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -45,12 +45,19 @@ public abstract class ControllerTestConfig {
     @Value("${auth.header.name:x-auth-token}")
     protected String authHeaderName;
 
+    private User userDto;
+
     protected String token;
 
     protected void authenticateUserWithAuthority(final AuthorityEnum authorityName) {
         final Authority authority = authorityService.create(new Authority(authorityName));
-        final User userDto = prepareUserWithRole(authority);
+        userDto = prepareUserWithRole(authority);
         userService.create(userDto);
         token = tokenService.generate(userDto.getUsername(), userDto.getCredentials().toString()).getToken();
+    }
+
+    protected void cleanup() {
+        userService.delete(userDto.getId());
+        authorityService.delete(userDto.getAuthorities().get(0).getId());
     }
 }

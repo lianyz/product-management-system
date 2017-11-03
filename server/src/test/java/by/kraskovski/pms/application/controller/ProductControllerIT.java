@@ -5,10 +5,10 @@ import by.kraskovski.pms.application.controller.dto.ProductDto;
 import by.kraskovski.pms.domain.model.Product;
 import by.kraskovski.pms.domain.service.ProductService;
 import org.dozer.Mapper;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import static by.kraskovski.pms.domain.model.enums.AuthorityEnum.ROLE_ADMIN;
 import static by.kraskovski.pms.utils.TestUtils.prepareProduct;
@@ -17,18 +17,12 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * Integration test for {@link ProductController}
  */
-@Transactional
 public class ProductControllerIT extends ControllerTestConfig {
 
     private static final String BASE_PRODUCTS_URL = "/product";
@@ -41,7 +35,14 @@ public class ProductControllerIT extends ControllerTestConfig {
 
     @Before
     public void before() {
+        productService.deleteAll();
         authenticateUserWithAuthority(ROLE_ADMIN);
+    }
+
+    @After
+    public void after() {
+        cleanup();
+        productService.deleteAll();
     }
 
     @Test

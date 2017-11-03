@@ -6,9 +6,8 @@ import by.kraskovski.pms.domain.model.User;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.http.MediaType;
-import org.springframework.transaction.annotation.Transactional;
 
-import static by.kraskovski.pms.utils.TestUtils.prepareUser;
+import static by.kraskovski.pms.utils.TestUtils.*;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
@@ -18,7 +17,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Transactional
 public class AuthenticationControllerIT extends ControllerTestConfig {
 
     private static final String BASE_AUTH_URL = "/auth";

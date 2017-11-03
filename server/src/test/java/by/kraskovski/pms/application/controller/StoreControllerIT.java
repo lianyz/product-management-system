@@ -13,7 +13,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.transaction.annotation.Transactional;
 
 import static by.kraskovski.pms.utils.TestUtils.prepareStock;
 import static by.kraskovski.pms.utils.TestUtils.prepareStore;
@@ -30,7 +29,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Transactional
 public class StoreControllerIT extends ControllerTestConfig {
 
     private static final String BASE_STORE_URL = "/store";
@@ -46,7 +44,16 @@ public class StoreControllerIT extends ControllerTestConfig {
 
     @Before
     public void before() {
+        storeService.deleteAll();
+        stockService.deleteAll();
         authenticateUserWithAuthority(AuthorityEnum.ROLE_ADMIN);
+    }
+
+    @After
+    public void after() {
+        cleanup();
+        storeService.deleteAll();
+        stockService.deleteAll();
     }
 
     @Test

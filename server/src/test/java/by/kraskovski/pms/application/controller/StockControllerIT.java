@@ -16,7 +16,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -39,7 +38,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Integration test for {@link StockController}
  */
-@Transactional
 public class StockControllerIT extends ControllerTestConfig {
 
     private static final String BASE_STOCK_URL = "/stock";
@@ -55,7 +53,14 @@ public class StockControllerIT extends ControllerTestConfig {
 
     @Before
     public void before() {
+        stockService.deleteAll();
         authenticateUserWithAuthority(AuthorityEnum.ROLE_ADMIN);
+    }
+
+    @After
+    public void after() {
+        cleanup();
+        stockService.deleteAll();
     }
 
     @Test
