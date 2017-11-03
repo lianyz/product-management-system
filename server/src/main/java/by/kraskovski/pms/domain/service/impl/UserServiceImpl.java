@@ -1,10 +1,9 @@
 package by.kraskovski.pms.domain.service.impl;
 
-import by.kraskovski.pms.application.security.exception.UserNotFoundException;
-import by.kraskovski.pms.domain.model.Authority;
-import by.kraskovski.pms.domain.model.User;
 import by.kraskovski.pms.domain.model.enums.AuthorityEnum;
+import by.kraskovski.pms.domain.model.User;
 import by.kraskovski.pms.domain.repository.UserRepository;
+import by.kraskovski.pms.application.security.exception.UserNotFoundException;
 import by.kraskovski.pms.domain.service.AuthorityService;
 import by.kraskovski.pms.domain.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +15,9 @@ import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Collections.singletonList;
-import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 
 @Service
@@ -34,22 +33,19 @@ public class UserServiceImpl implements UserService {
         object.setId(null);
         object.setCreateDate(LocalDateTime.now());
         object.setPassword(PASSWORD_ENCODER.encode(object.getPassword()));
-        if (CollectionUtils.isEmpty(object.getAuthorities())) {
-            object.setAuthorities(singletonList(authorityService.findByName(AuthorityEnum.ROLE_USER)));
-        }
-
+        verifyUserAuthorities(object);
         return userRepository.save(object);
     }
 
     @Override
     public User find(final String id) {
-        return ofNullable(userRepository.findOne(id))
+        return Optional.ofNullable(userRepository.findOne(id))
                 .orElseThrow(() -> new UserNotFoundException("User with id: \"" + id + "\" doesn't exists in db!"));
     }
 
     @Override
     public User findByUsername(final String username) {
-        return ofNullable(userRepository.findByUsername(username))
+        return Optional.ofNullable(userRepository.findByUsername(username))
                 .orElseThrow(() -> new UserNotFoundException("User with username: \"" + username + "\" doesn't exists in db!"));
     }
 
@@ -59,12 +55,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User update(final User updateUser) {
-        final User oldUser = find(updateUser.getId());
-        final String encodedPassword = verifyPassword(oldUser.getPassword(), updateUser.getPassword());
-        updateUser.setPassword(encodedPassword);
-        verifyAuthorities(oldUser, updateUser);
-        return userRepository.save(updateUser);
+    public User update(final User object) {
+        final User oldUser = find(object.getId());
+        if (!PASSWORD_ENCODER.matches(object.getPassword(), oldUser.getPassword())
+                && !oldUser.getPassword().equals(object.getPassword())) {
+            object.setPassword(PASSWORD_ENCODER.encode(object.getPassword()));
+            return userRepository.save(object);
+        }
+        object.setPassword(oldUser.getPassword());
+        verifyUserAuthorities(object);
+        return userRepository.save(object);
     }
 
     @Override
@@ -81,22 +81,14 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteAll();
     }
 
-    private String verifyPassword(final String oldPassword, final String newPassword) {
-        if (!PASSWORD_ENCODER.matches(newPassword, oldPassword)
-                && !oldPassword.equals(newPassword)) {
-            return PASSWORD_ENCODER.encode(newPassword);
+    private void verifyUserAuthorities(final User object) {
+        if (object == null) {
+            throw new IllegalArgumentException("Can't verify user authorities, because user is null!");
         }
-        return oldPassword;
-    }
-
-    private void verifyAuthorities(final User currentUser, final User updateUser) {
-        final List<Authority> updateAuthorities = ofNullable(updateUser.getAuthorities())
-                .orElseThrow(() -> new IllegalArgumentException("Can't verify user authorities!"));
-
-        if (CollectionUtils.isEmpty(updateAuthorities)) {
-            updateUser.setAuthorities(singletonList(authorityService.findByName(AuthorityEnum.ROLE_USER)));
-        } else if (!currentUser.getAuthorities().equals(updateAuthorities)){
-            updateUser.setAuthorities(updateAuthorities.stream()
+        if (CollectionUtils.isEmpty(object.getAuthorities())) {
+            object.setAuthorities(singletonList(authorityService.findByName(AuthorityEnum.ROLE_USER)));
+        } else {
+            object.setAuthorities(object.getAuthorities().stream()
                     .map(authority -> authorityService.find(authority.getId()))
                     .collect(toList()));
         }

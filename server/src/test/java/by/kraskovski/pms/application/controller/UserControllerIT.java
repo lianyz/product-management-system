@@ -2,9 +2,7 @@ package by.kraskovski.pms.application.controller;
 
 import by.kraskovski.pms.application.controller.config.ControllerTestConfig;
 import by.kraskovski.pms.application.controller.dto.UserDto;
-import by.kraskovski.pms.domain.model.Authority;
 import by.kraskovski.pms.domain.model.User;
-import by.kraskovski.pms.domain.service.AuthorityService;
 import by.kraskovski.pms.domain.service.UserService;
 import org.dozer.Mapper;
 import org.junit.After;
@@ -15,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.time.LocalDateTime;
 
 import static by.kraskovski.pms.domain.model.enums.AuthorityEnum.ROLE_ADMIN;
-import static by.kraskovski.pms.domain.model.enums.AuthorityEnum.ROLE_USER;
 import static by.kraskovski.pms.utils.TestUtils.prepareUser;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
@@ -36,9 +33,6 @@ public class UserControllerIT extends ControllerTestConfig {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private AuthorityService authorityService;
 
     @Autowired
     private Mapper mapper;
@@ -111,7 +105,6 @@ public class UserControllerIT extends ControllerTestConfig {
 
     @Test
     public void updateUserTest() throws Exception {
-        authorityService.create(new Authority(ROLE_USER));
         final User user = userService.create(prepareUser());
         user.setUsername(randomAlphabetic(20));
         user.setPassword(randomAlphabetic(5) + randomNumeric(5));

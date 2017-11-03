@@ -3,7 +3,6 @@ package by.kraskovski.pms.domain.model;
 import by.kraskovski.pms.domain.model.base.BaseEntity;
 import by.kraskovski.pms.domain.model.enums.AuthorityEnum;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -18,7 +17,6 @@ import javax.persistence.Enumerated;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
 public class Authority extends BaseEntity implements GrantedAuthority {
 
     @Column(unique = true, nullable = false)
